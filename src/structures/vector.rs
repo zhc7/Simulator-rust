@@ -37,6 +37,7 @@ impl Add for Rvector {
 
 impl AddAssign for Rvector {
     fn add_assign(&mut self, other: Rvector) {
+        assert_eq!(self.unit, other.unit, "Unit mismatch: {} != {}", self.unit, other.unit);
         for i in 0..DIM {
             self.val[i] += other.val[i];
         }
@@ -47,6 +48,7 @@ impl Sub for Rvector {
     type Output = Rvector;
 
     fn sub(self, other: Rvector) -> Rvector {
+        assert_eq!(self.unit, other.unit, "Unit mismatch: {} != {}", self.unit, other.unit);
         let mut f = self.clone();
         for i in 0..DIM {
             f.val[i] -= other.val[i];
@@ -57,6 +59,7 @@ impl Sub for Rvector {
 
 impl SubAssign for Rvector {
     fn sub_assign(&mut self, other: Rvector) {
+        assert_eq!(self.unit, other.unit, "Unit mismatch: {} != {}", self.unit, other.unit);
         for i in 0..DIM {
             self.val[i] -= other.val[i];
         }

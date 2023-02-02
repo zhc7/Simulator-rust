@@ -16,7 +16,7 @@ pub enum BasicUnit {
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Unit {
-    basic_units: [i32; 7],
+    pub basic_units: [i32; 7],
 }
 
 impl BasicUnit {
@@ -97,7 +97,7 @@ impl BitXor<i32> for BasicUnit {
 }
 
 impl Unit {
-    pub fn new(unit: Option<BasicUnit>) -> Unit {
+    pub const fn new(unit: Option<BasicUnit>) -> Unit {
         let mut basic_units = [0; 7];
         if let Some(unit) = unit {
             basic_units[unit as usize] = 1;

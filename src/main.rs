@@ -1,7 +1,7 @@
-mod structure;
+mod structures;
 mod entities;
 
-use structure::*;
+use structures::*;
 
 fn main() {
     let mut x = Unit::new(Some(Meter));
@@ -10,4 +10,5 @@ fn main() {
     x /= y.clone();
     println!("{x:?}, {y:?}");
     println!("Hello, world!");
+    println!("{}",Meter * Meter / ((Second ^ 2) * Meter));
 }

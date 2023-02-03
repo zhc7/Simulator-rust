@@ -1,4 +1,4 @@
-use crate::structures::{COULOMB, Rvector, Scaler};
+use crate::structures::{COULOMB, ElectricField, Field, Rvector, Scaler};
 
 pub trait Entity {
     fn get_mass(&self) -> Scaler;
@@ -17,14 +17,22 @@ pub trait Entity {
     fn get_force(&self) -> Rvector;
     fn add_force(&mut self, force: Rvector);
     fn get_delta_force(&self) -> Rvector;
+    fn get_field(&self) -> Field {
+        Field {
+            electric: ElectricField {
+                center_charge: self.get_charge(),
+                center_position: self.get_position(),
+            },
+        }
+    }
     fn tick(&mut self, dt: Scaler) {
         let mass = self.get_mass();
         // a = kt; k = delta_a / delta_t
         let delta_acc = &self.get_delta_force() / &mass;
         // v = 1/2kt^2; delta_v = 1/2 delta_a / delta_t
-        let delta_vel = &delta_acc * ( &dt / 2.0 );
+        let delta_vel = &delta_acc * (&dt / 2.0);
         // s = 1/6kt^3; delta_s = 1/6 delta_a / delta_t^2  = 1/3 delta_v / delta_t
-        let delta_pos = &delta_vel * ( &dt / 3.0 );
+        let delta_pos = &delta_vel * (&dt / 3.0);
         self.set_position(self.get_position() + delta_pos);
         self.set_velocity(self.get_velocity() + delta_vel);
         self.set_acceleration(self.get_acceleration() + delta_acc);

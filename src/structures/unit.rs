@@ -14,7 +14,7 @@ pub enum BasicUnit {
     Candela,
 }
 
-#[derive(Clone, Debug, PartialEq, Copy)]
+#[derive(Clone, Debug, PartialEq, Copy, Eq)]
 pub struct Unit {
     pub basic_units: [i8; 7],
 }

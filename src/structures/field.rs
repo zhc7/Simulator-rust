@@ -1,9 +1,17 @@
 use crate::structures::{Entity, Rvector, Scaler};
 use crate::consts::*;
 
-pub trait Field {
-    fn get_force(&self, entity: &impl Entity) -> Rvector;
-    fn get_potential(&self, entity: &impl Entity) -> Scaler;
+pub struct Field {
+    pub electric: ElectricField,
+}
+
+impl Field {
+    pub fn get_force(&self, entity: &impl Entity) -> Rvector {
+        self.electric.get_force(entity)
+    }
+    pub fn get_potential(&self, entity: &impl Entity) -> Scaler {
+        self.electric.get_potential(entity)
+    }
 }
 
 pub struct ElectricField {
@@ -11,8 +19,8 @@ pub struct ElectricField {
     pub center_position: Rvector,
 }
 
-impl Field for ElectricField {
-    fn get_force(&self, entity: &impl Entity) -> Rvector {
+impl ElectricField {
+    pub fn get_force(&self, entity: &impl Entity) -> Rvector {
         let charge = entity.get_charge();
         let position = entity.get_position();
         let distance = &self.center_position - &position;
@@ -20,7 +28,7 @@ impl Field for ElectricField {
         let force = &KE * &distance * ( &charge * &self.center_charge / &distance2 );
         force
     }
-    fn get_potential(&self, entity: &impl Entity) -> Scaler {
+    pub fn get_potential(&self, entity: &impl Entity) -> Scaler {
         let charge = entity.get_charge();
         let position = entity.get_position();
         let distance = &self.center_position - &position;

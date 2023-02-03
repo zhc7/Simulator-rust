@@ -9,6 +9,19 @@ pub struct Rvector {
     pub unit: Unit,
 }
 
+impl PartialEq for Rvector {
+    fn eq(&self, other: &Self) -> bool {
+        for i in 0..DIM {
+            if self.val[i] != other.val[i] {
+                return false;
+            }
+        }
+        self.unit == other.unit
+    }
+}
+
+impl Eq for Rvector {}
+
 impl Rvector {
     pub fn new() -> Rvector {
         Rvector { val: [0.0; DIM], unit: Unit::new(None) }

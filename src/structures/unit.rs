@@ -16,7 +16,7 @@ pub enum BasicUnit {
 
 #[derive(Clone, Debug, PartialEq, Copy)]
 pub struct Unit {
-    pub basic_units: [i32; 7],
+    pub basic_units: [i8; 7],
 }
 
 impl BasicUnit {
@@ -86,10 +86,10 @@ impl Div<Unit> for BasicUnit {
     }
 }
 
-impl BitXor<i32> for BasicUnit {
+impl BitXor<i8> for BasicUnit {
     type Output = Unit;
 
-    fn bitxor(self, rhs: i32) -> Unit {
+    fn bitxor(self, rhs: i8) -> Unit {
         let mut unit = Unit::new(None);
         unit.basic_units[self as usize] = rhs;
         unit
@@ -105,20 +105,20 @@ impl Unit {
         Unit { basic_units }
     }
 
-    fn mul(&mut self, unit: BasicUnit, power: Option<i32>) {
+    fn mul(&mut self, unit: BasicUnit, power: Option<i8>) {
         let power = match power {
             Some(x) => x,
             None => 1
         };
-        self.basic_units[unit as usize] += power as i32;
+        self.basic_units[unit as usize] += power;
     }
 
-    fn div(&mut self, unit: BasicUnit, power: Option<i32>) {
+    fn div(&mut self, unit: BasicUnit, power: Option<i8>) {
         let power = match power {
             Some(x) => x,
             None => 1
         };
-        self.basic_units[unit as usize] -= power as i32;
+        self.basic_units[unit as usize] -= power;
     }
 }
 

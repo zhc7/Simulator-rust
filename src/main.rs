@@ -2,6 +2,10 @@ use structures::*;
 
 mod structures;
 mod entities;
+mod main_loop;
+
+#[macro_use] extern crate impl_ops;
+
 
 fn main() {
     let mut x = Unit::new(Some(Meter));

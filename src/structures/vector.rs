@@ -2,6 +2,8 @@ use std::ops::{Add, AddAssign, Div, DivAssign, Index, Mul, MulAssign, Sub, SubAs
 
 use crate::structures::{DIM, Scaler, Unit};
 
+
+
 #[derive(Clone, Debug)]
 pub struct Rvector {
     pub val: [f64; DIM],
@@ -107,5 +109,117 @@ impl DivAssign<Scaler> for Rvector {
             self.val[i] /= other.val;
         }
         self.unit /= other.unit;
+    }
+}
+
+impl Mul for Rvector {
+    type Output = Scaler;
+
+    fn mul(self, other: Rvector) -> Scaler {
+        let mut sum:f64 = 0.0;
+        for i in 0..DIM {
+            sum += self.val[i] * other.val[i];
+        }
+        Scaler { val: sum, unit: self.unit * other.unit }
+    }
+}
+
+impl Add for &Rvector {
+    type Output = Rvector;
+
+    fn add(self, other:&Rvector) -> Rvector {
+        assert_eq!(self.unit, other.unit, "Unit mismatch: {} != {}", self.unit, other.unit);
+        let mut f = self.clone();
+        for i in 0..DIM {
+            f.val[i] += other.val[i];
+        }
+        f
+    }
+}
+
+impl AddAssign<&Rvector> for Rvector {
+    fn add_assign(&mut self, other: &Rvector) {
+        assert_eq!(self.unit, other.unit, "Unit mismatch: {} != {}", self.unit, other.unit);
+        for i in 0..DIM {
+            self.val[i] += other.val[i];
+        }
+    }
+}
+
+impl Sub for &Rvector {
+    type Output = Rvector;
+
+    fn sub(self, other: &Rvector) -> Rvector {
+        assert_eq!(self.unit, other.unit, "Unit mismatch: {} != {}", self.unit, other.unit);
+        let mut f = self.clone();
+        for i in 0..DIM {
+            f.val[i] -= other.val[i];
+        }
+        f
+    }
+}
+
+impl SubAssign<&Rvector> for Rvector {
+    fn sub_assign(&mut self, other: &Rvector) {
+        assert_eq!(self.unit, other.unit, "Unit mismatch: {} != {}", self.unit, other.unit);
+        for i in 0..DIM {
+            self.val[i] -= other.val[i];
+        }
+    }
+}
+
+impl Mul<&Scaler> for &Rvector {
+    type Output = Rvector;
+
+    fn mul(self, other: &Scaler) -> Rvector {
+        let mut f = self.clone();
+        for i in 0..DIM {
+            f.val[i] *= other.val;
+        }
+        f.unit *= other.unit;
+        f
+    }
+}
+
+impl MulAssign<&Scaler> for Rvector {
+    fn mul_assign(&mut self, other: &Scaler) {
+        for i in 0..DIM {
+            self.val[i] *= other.val;
+        }
+        self.unit *= other.unit;
+    }
+}
+
+impl Div<&Scaler> for &Rvector {
+    type Output = Rvector;
+
+    fn div(self, other: &Scaler) -> Rvector {
+        let mut f = self.clone();
+        for i in 0..DIM {
+            f.val[i] /= other.val;
+        }
+        f.unit /= other.unit;
+        f
+    }
+}
+
+impl DivAssign<&Scaler> for Rvector {
+    fn div_assign(&mut self, other: &Scaler) {
+        for i in 0..DIM {
+            self.val[i] /= other.val;
+        }
+        self.unit /= other.unit;
+    }
+}
+
+impl Mul for &Rvector {
+    type Output = Scaler;
+
+    fn mul(self, other: &Rvector) -> Scaler {
+        let mut sum:f64 = 0.0;
+        for i in 0..DIM {
+            sum += self.val[i] * other.val[i];
+        }
+        Scaler { val: sum, unit: self.unit * other.unit }
     }
 }

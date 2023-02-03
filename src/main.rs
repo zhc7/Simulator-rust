@@ -2,7 +2,8 @@ use structures::*;
 
 mod structures;
 mod entities;
-mod main_loop;
+mod run;
+mod consts;
 
 #[macro_use] extern crate impl_ops;
 

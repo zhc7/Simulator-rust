@@ -13,6 +13,14 @@ impl Rvector {
     pub fn new() -> Rvector {
         Rvector { val: [0.0; DIM], unit: Unit::new(None) }
     }
+
+    pub fn length(&self) -> Scaler {
+        let mut sum:f64 = 0.0;
+        for i in 0..DIM {
+            sum += self.val[i] * self.val[i];
+        }
+        Scaler { val: sum.sqrt(), unit: self.unit }
+    }
 }
 
 impl Index<usize> for Rvector {

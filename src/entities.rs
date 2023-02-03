@@ -7,6 +7,7 @@ pub struct Circle {
     pub vel: Rvector,
     pub acc: Rvector,
     pub force: Rvector,
+    pub delta_force: Rvector,
 }
 
 impl Circle {
@@ -33,6 +34,7 @@ impl Circle {
             vel,
             acc,
             force,
+            delta_force: Rvector::new(),
         }
     }
 }
@@ -67,6 +69,10 @@ impl Entity for Circle {
     }
     fn add_force(&mut self, force: Rvector) {
         assert_eq!(force.unit, NEWTON, "Unit mismatch: {} != {}", force.unit, NEWTON);
+        self.delta_force += &force;
         self.force += force;
+    }
+    fn get_delta_force(&self) -> Rvector {
+        self.delta_force.clone()
     }
 }

@@ -6,11 +6,11 @@ pub use scaler::*;
 pub use unit::*;
 pub use vector::*;
 
-mod unit;
-mod vector;
-mod scaler;
-mod entity;
-mod common_units;
-mod field;
+pub mod unit;
+pub mod vector;
+pub mod scaler;
+pub mod entity;
+pub mod common_units;
+pub mod field;
 
 const DIM: usize = 3;

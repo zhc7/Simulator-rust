@@ -1,7 +1,13 @@
-use crate::structures::{Rvector, Scaler};
+use crate::structures::{COULOMB, Rvector, Scaler};
 
 pub trait Entity {
     fn get_mass(&self) -> Scaler;
+    fn get_charge(&self) -> Scaler {
+        Scaler { val: 0.0, unit: COULOMB }
+    }
+    fn set_charge(&mut self, charge: Scaler) {
+        assert_eq!(charge.unit, COULOMB, "Unit mismatch: {} != {}", charge.unit, COULOMB);
+    }
     fn get_position(&self) -> Rvector;
     fn set_position(&mut self, position: Rvector);
     fn get_velocity(&self) -> Rvector;
@@ -16,9 +22,9 @@ pub trait Entity {
         // a = kt; k = delta_a / delta_t
         let delta_acc = &self.get_delta_force() / &mass;
         // v = 1/2kt^2; delta_v = 1/2 delta_a / delta_t
-        let delta_vel = &delta_acc * &( &dt / 2.0 );
+        let delta_vel = &delta_acc * ( &dt / 2.0 );
         // s = 1/6kt^3; delta_s = 1/6 delta_a / delta_t^2  = 1/3 delta_v / delta_t
-        let delta_pos = &delta_vel * &( &dt / 3.0 );
+        let delta_pos = &delta_vel * ( &dt / 3.0 );
         self.set_position(self.get_position() + delta_pos);
         self.set_velocity(self.get_velocity() + delta_vel);
         self.set_acceleration(self.get_acceleration() + delta_acc);

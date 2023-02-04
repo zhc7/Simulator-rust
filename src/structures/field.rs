@@ -1,5 +1,5 @@
-use crate::structures::{Entity, Rvector, Scaler};
 use crate::consts::*;
+use crate::structures::{Entity, Rvector, Scaler};
 
 pub struct Field {
     pub electric: ElectricField,
@@ -23,10 +23,10 @@ impl ElectricField {
     pub fn get_force(&self, entity: &Box<dyn Entity>) -> Rvector {
         let charge = entity.get_charge();
         let position = entity.get_position();
-        let distance =  &position - &self.center_position;
+        let distance = &position - &self.center_position;
         let distance2 = &distance * &distance;
         let distance3 = distance2 * &distance;
-        let force = &KE * &distance * ( &charge * &self.center_charge / &distance3.length() );
+        let force = &KE * &distance * (&charge * &self.center_charge / &distance3.length());
         force
     }
     pub fn get_potential_energy(&self, entity: &Box<dyn Entity>) -> Scaler {

@@ -20,7 +20,7 @@ impl Scaler {
             },
         }
     }
-    
+
     pub fn zero(unit: Unit) -> Scaler {
         Scaler { val: 0.0, unit }
     }

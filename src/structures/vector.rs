@@ -1,6 +1,6 @@
 use std::fmt::Display;
-use std::ops::Index;
 use std::ops;
+use std::ops::Index;
 
 use crate::structures::{DIM, Scaler, Unit};
 
@@ -46,7 +46,7 @@ impl Rvector {
     }
 
     pub fn length(&self) -> Scaler {
-        let mut sum:f64 = 0.0;
+        let mut sum: f64 = 0.0;
         for i in 0..DIM {
             sum += self.val[i] * self.val[i];
         }

@@ -1,3 +1,5 @@
+use macroquad::prelude::*;
+
 use crate::structures::*;
 
 pub struct Circle {
@@ -102,5 +104,10 @@ impl Entity for Circle {
     fn clear_delta_force(&mut self) {
         self.old_force = self.new_force.clone();
         self.new_force = Rvector::zero(NEWTON);
+    }
+    fn draw(&self) {
+        let [x, y, z] = self.pos.val;
+        let r = self.radius.val as f32;
+        draw_sphere(Vec3::new(x as f32, y as f32, z as f32), r, None, RED);
     }
 }

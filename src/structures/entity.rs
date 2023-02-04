@@ -47,4 +47,5 @@ pub trait Entity {
         let vel2 = &vel * &vel;
         mass * vel2 / 2.0
     }
+    fn draw(&self);
 }

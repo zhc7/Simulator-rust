@@ -9,9 +9,10 @@ mod structures;
 mod entities;
 mod run;
 mod consts;
+mod painting;
 
-
-fn main() {
+#[macroquad::main("Hello")]
+async fn main() {
     let a: Circle = Circle::new(Scaler { val: 1.0, unit: METER },
                                 Rvector { val: [0.0, 0.0, 0.0], unit: METER },
                                 Scaler { val: 1.0, unit: KILOGRAM },
@@ -37,5 +38,5 @@ fn main() {
     entities.push(Box::new(a));
     entities.push(Box::new(b));
     entities.push(Box::new(c));
-    run::run(&mut entities, Scaler { val: 1.0, unit: SECOND });
+    run::run(&mut entities, Scaler { val: 1.0, unit: SECOND }).await;
 }

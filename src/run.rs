@@ -1,3 +1,4 @@
+use crate::painting::paint;
 use crate::structures::{Entity, JOULE, Scaler, SECOND};
 
 const DT: Scaler = Scaler { val: 0.0001, unit: SECOND };
@@ -23,19 +24,20 @@ pub fn get_energy(entities: &Vec<Box<dyn Entity>>) -> (Scaler, Scaler, Scaler) {
     (potential_energy, kinetic_energy, energy)
 }
 
-fn print_status(entities: &Vec<Box<dyn Entity>>) {
+async fn print_status(entities: &Vec<Box<dyn Entity>>) {
     for i in 0..entities.len() {
         let entity = &entities[i];
         println!("Entity {}: {}, {}, {}", i, entity.get_position(), entity.get_velocity(), entity.get_acceleration());
     }
+    paint(entities).await;
 }
 
 
-pub fn run(entities: &mut Vec<Box<dyn Entity>>, time: Scaler) {
+pub async fn run(entities: &mut Vec<Box<dyn Entity>>, time: Scaler) {
     let mut t = Scaler { val: 0.0, unit: SECOND };
 
     println!("t = {}", t);
-    print_status(entities);
+    print_status(entities).await;
     let (potential_energy, kinetic_energy, energy) = get_energy(entities);
     println!("Potential Energy: {}, Kinetic Energy: {}, Energy: {}",
              potential_energy, kinetic_energy, energy);
@@ -60,7 +62,7 @@ pub fn run(entities: &mut Vec<Box<dyn Entity>>, time: Scaler) {
 
         if (t.val / DT.val) as i32 % (INTERVAL / DT.val) as i32 == 0 {
             println!("t = {}", t);
-            print_status(entities);
+            print_status(entities).await;
             let (potential_energy, kinetic_energy, energy) = get_energy(entities);
             println!("Potential Energy: {}, Kinetic Energy: {}, Energy: {}",
                      potential_energy, kinetic_energy, energy);
@@ -68,7 +70,7 @@ pub fn run(entities: &mut Vec<Box<dyn Entity>>, time: Scaler) {
     }
 
     println!("t = {}", t);
-    print_status(entities);
+    print_status(entities).await;
     let (potential_energy, kinetic_energy, energy) = get_energy(entities);
     println!("Potential Energy: {}, Kinetic Energy: {}, Energy: {}",
              potential_energy, kinetic_energy, energy);

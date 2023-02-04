@@ -13,4 +13,4 @@ pub mod entity;
 pub mod common_units;
 pub mod field;
 
-const DIM: usize = 3;
+pub const DIM: usize = 3;

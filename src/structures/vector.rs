@@ -1,3 +1,4 @@
+use std::fmt::Display;
 use std::ops::Index;
 use std::ops;
 
@@ -22,9 +23,26 @@ impl PartialEq for Rvector {
 
 impl Eq for Rvector {}
 
+impl Display for Rvector {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "[")?;
+        for i in 0..DIM {
+            write!(f, "{}", self.val[i])?;
+            if i < DIM - 1 {
+                write!(f, ", ")?;
+            }
+        }
+        write!(f, "] {}", self.unit)
+    }
+}
+
 impl Rvector {
     pub fn new() -> Rvector {
         Rvector { val: [0.0; DIM], unit: Unit::new(None) }
+    }
+
+    pub fn zero(unit: Unit) -> Rvector {
+        Rvector { val: [0.0; DIM], unit }
     }
 
     pub fn length(&self) -> Scaler {
@@ -77,7 +95,7 @@ impl_op_ex!(-= |a: &mut Rvector, b: &Rvector| {
 });
 
 impl_op_ex_commutative!(* |a: &Rvector, b: &Scaler| -> Rvector {
-    let mut f = a.clone();
+    let mut f = Rvector { val: a.val, unit: a.unit * b.unit };
     for i in 0..DIM {
         f.val[i] *= b.val;
     }
@@ -85,13 +103,14 @@ impl_op_ex_commutative!(* |a: &Rvector, b: &Scaler| -> Rvector {
 });
 
 impl_op_ex!(*= |a: &mut Rvector, b: &Scaler| {
+    a.unit *= b.unit;
     for i in 0..DIM {
         a.val[i] *= b.val;
     }
 });
 
 impl_op_ex!(/ |a: &Rvector, b: &Scaler| -> Rvector {
-    let mut f = a.clone();
+    let mut f = Rvector { val: a.val, unit: a.unit / b.unit };
     for i in 0..DIM {
         f.val[i] /= b.val;
     }
@@ -99,6 +118,7 @@ impl_op_ex!(/ |a: &Rvector, b: &Scaler| -> Rvector {
 });
 
 impl_op_ex!(/= |a: &mut Rvector, b: &Scaler| {
+    a.unit /= b.unit;
     for i in 0..DIM {
         a.val[i] /= b.val;
     }
@@ -110,4 +130,32 @@ impl_op_ex!(* |a: &Rvector, b: &Rvector| -> Scaler {
         f.val += a.val[i] * b.val[i];
     }
     f
+});
+
+impl_op_ex_commutative!(* |a: &Rvector, b: f64| -> Rvector {
+    let mut f = Rvector { val: a.val, unit: a.unit };
+    for i in 0..DIM {
+        f.val[i] *= b;
+    }
+    f
+});
+
+impl_op_ex_commutative!(/ |a: &Rvector, b: f64| -> Rvector {
+    let mut f = Rvector { val: a.val, unit: a.unit };
+    for i in 0..DIM {
+        f.val[i] /= b;
+    }
+    f
+});
+
+impl_op_ex!(*= |a: &mut Rvector, b: f64| {
+    for i in 0..DIM {
+        a.val[i] *= b;
+    }
+});
+
+impl_op_ex!(/= |a: &mut Rvector, b: f64| {
+    for i in 0..DIM {
+        a.val[i] /= b;
+    }
 });

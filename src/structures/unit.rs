@@ -147,7 +147,11 @@ impl Display for Unit {
         }
         for i in 0..7 {
             if self.basic_units[i] < 0 {
-                write!(f, " {}^{} ", BasicUnit::index(i), -self.basic_units[i])?;
+                write!(f, " {}", BasicUnit::index(i))?;
+                if self.basic_units[i] < -1 {
+                    write!(f, "^{}", -self.basic_units[i])?;
+                }
+                write!(f, " ")?;
             }
         }
         if cnt >= 2 {

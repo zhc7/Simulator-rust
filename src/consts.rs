@@ -1,21 +1,6 @@
 use crate::structures::{Scaler, Unit};
 
-pub const EPSILON0: Scaler = Scaler { val: 8.854187817620389e-12, unit: Unit { basic_units: [-3, 4, -2, 2, 0, 0, 0] } };
-pub const KE: Scaler = Scaler { val: 8.9875517873681764e9, unit: Unit { basic_units: [1, -3, 1, -2, 0, 0, 0] } };
-pub const MU0: Scaler = Scaler { val: 1.2566370614359173e-6, unit: Unit { basic_units: [1, -2, 1, -2, 0, 0, 0] } };
-pub const C: Scaler = Scaler { val: 299792458.0, unit: Unit { basic_units: [1, -1, 0, 0, 0, 0, 0] } };
-pub const G: Scaler = Scaler { val: 6.67408e-11, unit: Unit { basic_units: [-3, 2, 1, 0, 0, 0, 0] } };
-pub const H: Scaler = Scaler { val: 6.62607015e-34, unit: Unit { basic_units: [2, -1, 1, 0, 0, 0, 0] } };
-pub const HBAR: Scaler = Scaler { val: 1.0545718176461565e-34, unit: Unit { basic_units: [2, -1, 1, 0, 0, 0, 0] } };
-pub const K: Scaler = Scaler { val: 1.38064852e-23, unit: Unit { basic_units: [2, -2, 1, -2, 0, 0, 0] } };
-pub const NA: Scaler = Scaler { val: 6.022140857e23, unit: Unit { basic_units: [0, 0, 0, 0, 0, 1, 0] } };
-pub const R: Scaler = Scaler { val: 8.3144598, unit: Unit { basic_units: [2, -2, 1, -2, 0, 0, 0] } };
-pub const SIGMA: Scaler = Scaler { val: 5.670367e-8, unit: Unit { basic_units: [-3, 2, -1, -1, 0, 0, 0] } };
-pub const AVOGADRO: Scaler = Scaler { val: 6.022140857e23, unit: Unit { basic_units: [0, 0, 0, 0, 0, 1, 0] } };
-pub const PLANCK: Scaler = Scaler { val: 6.62607015e-34, unit: Unit { basic_units: [2, -1, 1, 0, 0, 0, 0] } };
-pub const PLANCK_REDUCED: Scaler = Scaler { val: 1.0545718176461565e-34, unit: Unit { basic_units: [2, -1, 1, 0, 0, 0, 0] } };
-pub const BOLTZMANN: Scaler = Scaler { val: 1.38064852e-23, unit: Unit { basic_units: [2, -2, 1, -2, 0, 0, 0] } };
-pub const FARADAY: Scaler = Scaler { val: 96485.33289, unit: Unit { basic_units: [0, 1, 0, 1, 0, 0, 0] } };
-pub const MOLAR_GAS: Scaler = Scaler { val: 8.3144598, unit: Unit { basic_units: [2, -2, 1, -2, 0, 0, 0] } };
+pub const EPSILON0: Scaler = Scaler { val: 8.854187817620389e-12, unit: Unit { basic_units: [4, -3, -1, 2, 0, 0, 0] } };
+pub const KE: Scaler = Scaler { val: 8.9875517873681764e9, unit: Unit { basic_units: [-4, 3, 1, -2, 0, 0, 0] } };
 pub const PI: Scaler = Scaler { val: std::f64::consts::PI, unit: Unit { basic_units: [0, 0, 0, 0, 0, 0, 0] } };
 pub const E: Scaler = Scaler { val: std::f64::consts::E, unit: Unit { basic_units: [0, 0, 0, 0, 0, 0, 0] } };

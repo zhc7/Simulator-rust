@@ -4,37 +4,55 @@ pub struct Circle {
     pub radius: Scaler,
     pub pos: Rvector,
     pub mass: Scaler,
+    pub charge: Scaler,
     pub vel: Rvector,
     pub acc: Rvector,
-    pub force: Rvector,
-    pub delta_force: Rvector,
+    pub old_force: Rvector,
+    pub new_force: Rvector,
 }
 
 impl Circle {
-    pub fn new(radius: Scaler, pos: Rvector, mass: Scaler, vel: Option<Rvector>, acc: Option<Rvector>, force: Option<Rvector>) -> Circle {
+    pub fn new(radius: Scaler, pos: Rvector, mass: Scaler, charge: Option<Scaler>, vel: Option<Rvector>, acc: Option<Rvector>, force: Option<Rvector>) -> Circle {
         assert_eq!(radius.unit, METER, "Unit mismatch: {} != {}", radius.unit, METER);
         assert_eq!(pos.unit, METER, "Unit mismatch: {} != {}", pos.unit, METER);
         assert_eq!(mass.unit, KILOGRAM, "Unit mismatch: {} != {}", mass.unit, KILOGRAM);
+        let charge = match charge {
+            Some(c) => {
+                assert_eq!(c.unit, COULOMB, "Unit mismatch: {} != {}", c.unit, COULOMB);
+                c
+            }
+            None => Scaler::zero(COULOMB),
+        };
         let vel = match vel {
-            Some(v) => v,
-            None => Rvector::new(),
+            Some(v) => {
+                assert_eq!(v.unit, V_UNIT, "Unit mismatch: {} != {}", v.unit, V_UNIT);
+                v
+            }
+            None => Rvector::zero(V_UNIT),
         };
         let acc = match acc {
-            Some(a) => a,
-            None => Rvector::new(),
+            Some(a) => {
+                assert_eq!(a.unit, A_UNIT, "Unit mismatch: {} != {}", a.unit, A_UNIT);
+                a
+            }
+            None => Rvector::zero(A_UNIT),
         };
         let force = match force {
-            Some(f) => f,
-            None => Rvector::new(),
+            Some(f) => {
+                assert_eq!(f.unit, NEWTON, "Unit mismatch: {} != {}", f.unit, NEWTON);
+                f
+            }
+            None => Rvector::zero(NEWTON),
         };
         Circle {
             radius,
             pos,
             mass,
+            charge,
             vel,
             acc,
-            force,
-            delta_force: Rvector::new(),
+            old_force: force,
+            new_force: Rvector::zero(NEWTON),
         }
     }
 }
@@ -42,6 +60,13 @@ impl Circle {
 impl Entity for Circle {
     fn get_mass(&self) -> Scaler {
         self.mass.clone()
+    }
+    fn get_charge(&self) -> Scaler {
+        self.charge.clone()
+    }
+    fn set_charge(&mut self, charge: Scaler) {
+        assert_eq!(charge.unit, COULOMB, "Unit mismatch: {} != {}", charge.unit, COULOMB);
+        self.charge = charge;
     }
     fn get_position(&self) -> Rvector {
         self.pos.clone()
@@ -65,14 +90,17 @@ impl Entity for Circle {
         self.acc = acceleration;
     }
     fn get_force(&self) -> Rvector {
-        self.force.clone()
+        self.new_force.clone()
     }
     fn add_force(&mut self, force: Rvector) {
         assert_eq!(force.unit, NEWTON, "Unit mismatch: {} != {}", force.unit, NEWTON);
-        self.delta_force += &force;
-        self.force += force;
+        self.new_force += force;
     }
     fn get_delta_force(&self) -> Rvector {
-        self.delta_force.clone()
+        &self.new_force - &self.old_force
+    }
+    fn clear_delta_force(&mut self) {
+        self.old_force = self.new_force.clone();
+        self.new_force = Rvector::zero(NEWTON);
     }
 }

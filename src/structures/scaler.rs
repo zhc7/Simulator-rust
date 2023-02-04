@@ -1,6 +1,8 @@
 use std::cmp::Ordering;
-use crate::structures::{Unit};
+use std::fmt::Display;
 use std::ops;
+
+use crate::structures::Unit;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Scaler {
@@ -13,10 +15,20 @@ impl Scaler {
         Scaler {
             val,
             unit: match unit {
-            Some(unit) => unit,
-            None => Unit::new(None),
+                Some(unit) => unit,
+                None => Unit::new(None),
+            },
         }
     }
+    
+    pub fn zero(unit: Unit) -> Scaler {
+        Scaler { val: 0.0, unit }
+    }
+}
+
+impl Display for Scaler {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{} {}", self.val, self.unit)
     }
 }
 
@@ -31,12 +43,10 @@ impl_op_ex!(- |a: &Scaler, b: &Scaler| -> Scaler {
 });
 
 impl_op_ex!(* |a: &Scaler, b: &Scaler| -> Scaler {
-    assert_eq!(a.unit, b.unit, "Unit mismatch: {} != {}", a.unit, b.unit);
     Scaler { val: a.val * b.val, unit: a.unit * b.unit}
 });
 
 impl_op_ex!(/ |a: &Scaler, b: &Scaler| -> Scaler {
-    assert_eq!(a.unit, b.unit, "Unit mismatch: {} != {}", a.unit, b.unit);
     Scaler { val: a.val / b.val, unit: a.unit / b.unit}
 });
 
@@ -51,13 +61,11 @@ impl_op_ex!(-= |a: &mut Scaler, b: &Scaler| {
 });
 
 impl_op_ex!(*= |a: &mut Scaler, b: &Scaler| {
-    assert_eq!(a.unit, b.unit, "Unit mismatch: {} != {}", a.unit, b.unit);
     a.val *= b.val;
     a.unit *= b.unit;
 });
 
 impl_op_ex!(/= |a: &mut Scaler, b: &Scaler| {
-    assert_eq!(a.unit, b.unit, "Unit mismatch: {} != {}", a.unit, b.unit);
     a.val /= b.val;
     a.unit /= b.unit;
 });

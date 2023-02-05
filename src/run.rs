@@ -1,3 +1,4 @@
+use std::cmp::min;
 use std::sync::mpsc::Receiver;
 use std::thread;
 
@@ -64,7 +65,7 @@ fn painter(time_receiver: Receiver<f64>, pos_receiver: Receiver<Rvector>, entiti
         let mut nodes = Vec::new();
         for i in 0..fns.len() {
             let mut c = fns[i](&mut window);
-            let color = COLORS[i];
+            let color = COLORS[min(i, 7)];
             c.set_color(color.0, color.1, color.2);
             nodes.push(c);
         }

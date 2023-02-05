@@ -1,7 +1,10 @@
-use macroquad::prelude::*;
+use kiss3d::nalgebra::Translation3;
+use kiss3d::scene::SceneNode;
+use kiss3d::window::Window;
 
 use crate::structures::*;
 
+#[derive(Clone)]
 pub struct Circle {
     pub radius: Scaler,
     pub pos: Rvector,
@@ -105,9 +108,15 @@ impl Entity for Circle {
         self.old_force = self.new_force.clone();
         self.new_force = Rvector::zero(NEWTON);
     }
-    fn draw(&self) {
-        let [x, y, z] = self.pos.val;
-        let r = self.radius.val as f32;
-        draw_sphere(Vec3::new(x as f32, y as f32, z as f32), r, None, RED);
+    fn get_draw(&self) -> Box<dyn Fn(&mut Window) -> SceneNode + Send> {
+        let radius = self.radius.val;
+        let pos = self.pos.val;
+        Box::new(move |window: &mut Window| {
+            let mut s = window.add_sphere(radius as f32);
+            s.set_color(0.0, 0.0, 1.0);
+            let [x, y, z] = pos;
+            s.set_local_translation(Translation3::new(x as f32, y as f32, z as f32));
+            s
+        })
     }
 }

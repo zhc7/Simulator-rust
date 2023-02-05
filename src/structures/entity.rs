@@ -1,3 +1,6 @@
+use kiss3d::scene::SceneNode;
+use kiss3d::window::Window;
+
 use crate::structures::{COULOMB, ElectricField, Field, Rvector, Scaler};
 
 pub trait Entity {
@@ -26,7 +29,29 @@ pub trait Entity {
             },
         }
     }
+    fn tick_3(&mut self, dt: Scaler) {
+        let mass = self.get_mass();
+        self.set_position(self.get_position() + &self.get_velocity() * &dt);
+        self.set_velocity(self.get_velocity() + &self.get_acceleration() * &dt);
+        self.set_acceleration(self.get_acceleration() + &self.get_delta_force() / &mass);
+        self.clear_delta_force();
+    }
+    // this tick is correct because once F is calculated, it is based on the old x, and in order
+    // to update, a must be jump to F / m to have the minimal lost.
+    // experiments indicates that this tick is the most accurate, and tick_3 have the loss that is
+    // twice of the tick_1.
     fn tick(&mut self, dt: Scaler) {
+        let mass = self.get_mass();
+        let delta_acc = &self.get_delta_force() / &mass;
+        let acc = self.get_acceleration() + delta_acc;
+        let vel = self.get_velocity() + &acc * &dt;
+        let pos = self.get_position() + &vel * &dt;
+        self.set_acceleration(acc);
+        self.set_velocity(vel);
+        self.set_position(pos);
+        self.clear_delta_force();
+    }
+    fn tick_1(&mut self, dt: Scaler) {
         let mass = self.get_mass();
         // a = a0 + kt; k = delta_a / delta_t; delta_a = k * delta_t;
         let delta_acc = &self.get_delta_force() / &mass;
@@ -47,5 +72,5 @@ pub trait Entity {
         let vel2 = &vel * &vel;
         mass * vel2 / 2.0
     }
-    fn draw(&self);
+    fn get_draw(&self) -> Box<dyn Fn(&mut Window) -> SceneNode + Send>;
 }

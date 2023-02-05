@@ -12,6 +12,17 @@ use crate::structures::{Entity, JOULE, Rvector, Scaler, SECOND};
 const DT: Scaler = Scaler { val: 0.001, unit: SECOND };
 const INTERVAL: f64 = 0.05;
 
+const COLORS: [(f32, f32, f32); 8] = [
+    (1., 0., 0.),
+    (0., 1., 0.),
+    (0., 0., 1.),
+    (1., 1., 0.),
+    (1., 0., 1.),
+    (0., 1., 1.),
+    (1., 1., 1.),
+    (0., 0., 0.)
+];
+
 pub fn get_energy(entities: &Vec<Box<dyn Entity>>) -> (Scaler, Scaler, Scaler) {
     let mut potential_energy = Scaler::zero(JOULE);
     let mut kinetic_energy = Scaler::zero(JOULE);
@@ -52,7 +63,10 @@ fn painter(time_receiver: Receiver<f64>, pos_receiver: Receiver<Rvector>, entiti
         window.set_background_color(0.5, 0.5, 0.5);
         let mut nodes = Vec::new();
         for i in 0..fns.len() {
-            nodes.push(fns[i](&mut window));
+            let mut c = fns[i](&mut window);
+            let color = COLORS[i];
+            c.set_color(color.0, color.1, color.2);
+            nodes.push(c);
         }
         let mut t = 0.;
         while window.render() {

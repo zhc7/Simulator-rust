@@ -1,7 +1,9 @@
 use std::cmp::min;
+use std::fmt::Display;
 use std::sync::mpsc::Receiver;
 use std::thread;
 
+use kiss3d::camera::ArcBall;
 use kiss3d::light::Light;
 use kiss3d::nalgebra::{Point2, Point3, Translation3};
 use kiss3d::text::Font;
@@ -10,7 +12,7 @@ use kiss3d::window::Window;
 //use crate::painting::paint;
 use crate::structures::{Entity, JOULE, Rvector, Scaler, SECOND};
 
-const DT: Scaler = Scaler { val: 0.001, unit: SECOND };
+const DT: Scaler = Scaler { val: 0.0001, unit: SECOND };
 const INTERVAL: f64 = 0.05;
 
 const COLORS: [(f32, f32, f32); 8] = [
@@ -53,7 +55,38 @@ fn print_status(entities: &Vec<Box<dyn Entity>>, t: &Scaler) {
     }
 }
 
-fn painter(time_receiver: Receiver<f64>, pos_receiver: Receiver<Rvector>, entities: &Vec<Box<dyn Entity>>) -> thread::JoinHandle<()> {
+fn get_info(entities: &Vec<Box<dyn Entity>>, t: &Scaler, initial_energy: &Scaler) -> Info {
+    let (potential_energy, kinetic_energy, energy) = get_energy(entities);
+    let delta_energy = ( &energy - initial_energy ) / initial_energy;
+    Info {
+        time: t.val,
+        initial_energy: initial_energy.val,
+        kinetic_energy: kinetic_energy.val,
+        potential_energy: potential_energy.val,
+        delta_energy: delta_energy.val,
+    }
+}
+
+struct Info {
+    time: f64,
+    initial_energy: f64,
+    kinetic_energy: f64,
+    potential_energy: f64,
+    delta_energy: f64,
+}
+
+impl Display for Info {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        writeln!(f, "Time: {:.4} s", self.time)?;
+        writeln!(f, "E_0: {:.4} J", self.initial_energy)?;
+        writeln!(f, "E_k: {:.4} J", self.kinetic_energy)?;
+        writeln!(f, "E_p: {:.4} J", self.potential_energy)?;
+        writeln!(f, "delta_E: {:.4}%", self.delta_energy)?;
+        Ok(())
+    }
+}
+
+fn painter(info_receiver: Receiver<Info>, pos_receiver: Receiver<Rvector>, entities: &Vec<Box<dyn Entity>>) -> thread::JoinHandle<()> {
     let mut fns = Vec::new();
     for e in entities {
         fns.push(e.get_draw());
@@ -62,6 +95,11 @@ fn painter(time_receiver: Receiver<f64>, pos_receiver: Receiver<Rvector>, entiti
         let mut window = Window::new("Demo");
         window.set_light(Light::StickToCamera);
         window.set_background_color(0.5, 0.5, 0.5);
+
+        let eye = Point3::new(20.0, 20.0, 20.0);
+        let at = Point3::origin();
+        let mut arc_ball = ArcBall::new(eye, at);
+
         let mut nodes = Vec::new();
         for i in 0..fns.len() {
             let mut c = fns[i](&mut window);
@@ -69,17 +107,20 @@ fn painter(time_receiver: Receiver<f64>, pos_receiver: Receiver<Rvector>, entiti
             c.set_color(color.0, color.1, color.2);
             nodes.push(c);
         }
-        let mut t = 0.;
-        while window.render() {
-            let t_result = time_receiver.try_recv();
+        let mut info = info_receiver.recv().unwrap();
+        while window.render_with_camera(&mut arc_ball) {
+            window.draw_line(&Point3::new(0., 0., 0.), &Point3::new(100., 0., 0.), &Point3::new(1., 0., 0.));
+            window.draw_line(&Point3::new(0., 0., 0.), &Point3::new(0., 100., 0.), &Point3::new(0., 1., 0.));
+            window.draw_line(&Point3::new(0., 0., 0.), &Point3::new(0., 0., 100.), &Point3::new(0., 0., 1.));
+            let t_result = info_receiver.try_recv();
             if t_result.is_ok() {
-                t = t_result.unwrap();
+                info = t_result.unwrap();
                 for i in 0..3 {
                     let p = pos_receiver.recv().unwrap();
                     nodes[i].set_local_translation(Translation3::new(p[0] as f32, p[1] as f32, p[2] as f32));
                 }
             }
-            window.draw_text(&format!("Time: {:.5}", t), &Point2::new(10., 20.),
+            window.draw_text(&format!("{}", info), &Point2::new(10., 10.),
                              50., &Font::default(), &Point3::new(1., 1., 1.));
         }
     })
@@ -96,7 +137,7 @@ pub fn run(entities: &mut Vec<Box<dyn Entity>>, time: Scaler) {
     let (potential_energy, kinetic_energy, energy) = get_energy(entities);
     println!("Potential Energy: {}, Kinetic Energy: {}, Energy: {}",
              potential_energy, kinetic_energy, energy);
-    let energy0 = energy;
+    let initial_energy = energy;
 
     while t < time {
         for i in 0..entities.len() {
@@ -120,7 +161,7 @@ pub fn run(entities: &mut Vec<Box<dyn Entity>>, time: Scaler) {
             let (potential_energy, kinetic_energy, energy) = get_energy(entities);
             println!("Potential Energy: {}, Kinetic Energy: {}, Energy: {}",
                      potential_energy, kinetic_energy, energy);
-            time_sender.send(t.val).unwrap();
+            time_sender.send(get_info(entities, &t, &initial_energy)).unwrap();
             for i in 0..entities.len() {
                 let e = &entities[i];
                 let p = e.get_position();
@@ -130,11 +171,7 @@ pub fn run(entities: &mut Vec<Box<dyn Entity>>, time: Scaler) {
     }
 
     print_status(entities, &t);
-    let (potential_energy, kinetic_energy, energy) = get_energy(entities);
-    println!("Potential Energy: {}, Kinetic Energy: {}, Energy: {}",
-             potential_energy, kinetic_energy, energy);
-    let delta_energy = energy - &energy0;
-    println!("Delta Energy: {}, percentage: {:.4}%", delta_energy, (&delta_energy / energy0).val * 100.0);
+    println!("{}", get_info(entities, &t, &initial_energy));
 
     handler.join().unwrap();
 }

@@ -12,9 +12,9 @@ mod consts;
 
 fn main() {
     let a: Circle = Circle::new(Scaler { val: 1.0, unit: METER },
-                                Rvector { val: [0.0, 0.0, 0.0], unit: METER },
+                                Rvector { val: [0.0, 3., 0.0], unit: METER },
                                 Scaler { val: 1.0, unit: KILOGRAM },
-                                Some(Scaler { val: -0.00001, unit: COULOMB }),
+                                Some(Scaler { val: -0.0001, unit: COULOMB }),
                                 None,
                                 None,
                                 None);
@@ -22,14 +22,14 @@ fn main() {
                                 Rvector { val: [1.0, 0.0, 0.0], unit: METER },
                                 Scaler { val: 1.0, unit: KILOGRAM },
                                 Some(Scaler { val: 0.0001, unit: COULOMB }),
-                                None,
+                                Some(Rvector { val: [0.0, 0.0, 2.0], unit: V_UNIT }),
                                 None,
                                 None);
     let c: Circle = Circle::new(Scaler { val: 1.0, unit: METER },
                                 Rvector { val: [-1.0, 0.0, 0.0], unit: METER },
                                 Scaler { val: 1.0, unit: KILOGRAM },
                                 Some(Scaler { val: 0.0001, unit: COULOMB }),
-                                None,
+                                Some(Rvector { val: [0.0, 0.0, -2.0], unit: V_UNIT }),
                                 None,
                                 None);
     let mut entities: Vec<Box<dyn Entity>> = Vec::new();

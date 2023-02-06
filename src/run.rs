@@ -14,6 +14,7 @@ use crate::structures::{Entity, JOULE, Rvector, Scaler, SECOND};
 
 const DT: Scaler = Scaler { val: 0.0001, unit: SECOND };
 const INTERVAL: f64 = 0.05;
+const FPS: u64 = 60;
 
 const COLORS: [(f32, f32, f32); 8] = [
     (1., 0., 0.),
@@ -95,6 +96,7 @@ fn painter(info_receiver: Receiver<Info>, pos_receiver: Receiver<Rvector>, entit
         let mut window = Window::new("Demo");
         window.set_light(Light::StickToCamera);
         window.set_background_color(0.5, 0.5, 0.5);
+        window.set_framerate_limit(Some(FPS));
 
         let eye = Point3::new(20.0, 20.0, 20.0);
         let at = Point3::origin();
